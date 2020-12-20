@@ -14,32 +14,26 @@ import java.util.List;
 public class Ex2 implements Runnable{
     private static MyFrame _win;
     private static Arena _ar;
-    private static long id;
-    private static int level;
+    private long id;
+    private int level;
     private JTextField idText;
     private JTextField levelText;
 
-
-    /*public static void main(String[] a) {
-//        id = Long.parseLong(a[0]);
-//        level = Integer.parseInt(a[1]);
-        Login();
-        Thread client = new Thread(new Ex2());
-        client.start();
-    }*/
+    public Ex2(){}
+    public Ex2(Long id, int level){
+        this.id = id;
+        this.level = level;
+    }
 
     public void Login() {
         JFrame frame = new JFrame();
-        JPanel panel = new JPanel();
-        panel.setBackground(Color.yellow);
-
         JLabel id = new JLabel("Enter id:");
         JLabel level = new JLabel("Enter level: ");
         idText = new JTextField();
         levelText = new JTextField();
-
         JButton submit = new JButton("SUBMIT");
         submit.addActionListener(this::ActionPerformed);
+
 
         JPanel pnl = new JPanel(new GridLayout(0, 1));
         pnl.add(id);
@@ -47,46 +41,38 @@ public class Ex2 implements Runnable{
         pnl.add(level);
         pnl.add(levelText);
         pnl.add(submit);
-//        pnl.setSize(1000, 700);
 
-
-//        frame.setLayout(new GridLayout(0, 1));
+        frame.setLayout(new GridLayout(0, 1));
         frame.setSize(1000, 700);
         frame.add(pnl, BorderLayout.CENTER);
         frame.pack();
         frame.setVisible(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-
     }
 
     public void ActionPerformed(ActionEvent action) {
-        this.id = Integer.parseInt(idText.getText());
+        this.id = Long.parseLong(idText.getText());
         level = Integer.parseInt(levelText.getText());
-
-        Thread runGame = new Thread(new Ex2());
+        Thread runGame = new Thread(new Ex2(id,level));
         runGame.start();
     }
 
     @Override
     public void run() {
-        int scenario_num = 23;//level
-        level = 11;
         game_service game = Game_Server_Ex2.getServer(level); // you have [0,23] games
-        //	int id = 999;
-//        	game.login(123445);
+       	game.login(id);
         directed_weighted_graph gg = game.getJava_Graph_Not_to_be_used();
         init(game);
         game.startGame();
-
         _win.initTimeF((int)game.timeToEnd()/1000);
-        System.out.println(game.timeToEnd()/1000);
+
         while(game.isRunning()) {
             moveAgent(game, gg);
+            _win.addMove();
             _win.repaint();
 //            try{Thread.sleep(90);}catch(Exception e){}
-            /*long start = System.currentTimeMillis() + 100;
-            while (System.currentTimeMillis() < start) {            _win.repaint(); }*/
+            long start = System.currentTimeMillis() + 100;
+            while (System.currentTimeMillis() < start) {}
 
         }
 

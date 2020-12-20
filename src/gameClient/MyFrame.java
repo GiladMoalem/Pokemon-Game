@@ -29,6 +29,7 @@ public class MyFrame extends JFrame /*implements ActionListener*/{
 	private Arena _ar;
 	private gameClient.util.Range2Range _w2f;
 	private MyPanel panel;
+	private int moveCounter = 0;
 
 
 
@@ -55,7 +56,9 @@ public class MyFrame extends JFrame /*implements ActionListener*/{
 		_w2f = Arena.w2f(g,frame);
 
 	}
-
+	public void addMove(){
+		moveCounter++;
+	}
 	@Override
 	public void paint(Graphics g) {
 		super.paintComponents(g);
@@ -94,6 +97,7 @@ public class MyFrame extends JFrame /*implements ActionListener*/{
 	}
 	private void drawAgants(Graphics g) {
 		g.setColor(Color.red);
+		if(_ar.getAgents()!=null)
 		for(CL_Agent ag: _ar.getAgents()){
 			geo_location c = ag.getLocation();
 			int r=8;
@@ -161,6 +165,7 @@ public class MyFrame extends JFrame /*implements ActionListener*/{
 			drawInfo(g);
 			drawTime(g);
 			drawAgentsGrad(g);
+			drawMoves(g);
 
 			updateFrame();
 
@@ -184,7 +189,11 @@ public class MyFrame extends JFrame /*implements ActionListener*/{
 			}
 
 		}
+		private void drawMoves(Graphics g){
+			String s = "Moves: "+moveCounter;
+			g.drawString(s,this.getWidth()-140,this.getHeight()-10);
 
+		}
 
 	}
 
