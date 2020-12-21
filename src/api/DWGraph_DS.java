@@ -80,9 +80,10 @@ public class DWGraph_DS implements directed_weighted_graph {
             edges.get(src).put(dest, new Iedge_data(src, dest, w));
             edgeSize++;
             modeCounter++;
-        }else if(edges.get(src).get(dest).getWeight() != w)//update connection
-            ((Iedge_data)edges.get(src).get(dest)).setWeight(w);
+        }else if(edges.get(src).get(dest).getWeight() != w) {//update connection
+            ((Iedge_data) edges.get(src).get(dest)).setWeight(w);
             modeCounter++;
+        }
     }
 
     @Override

@@ -11,13 +11,11 @@ public class Inode_data implements node_data,Comparable {
     private String info;
     private geo_location location;
     private static int taz = 0;
-//    HashMap<Integer, edge_data> edges;
 
     public Inode_data() {
         this.key = taz++;
         this.info = "";
-//        this.location = new Igeo_location();
-//        edges = new HashMap<Integer, edge_data>();
+
     }
 
     //copy constructor without neighbors
@@ -26,11 +24,9 @@ public class Inode_data implements node_data,Comparable {
         this.tag = n.getTag();
         this.weight = n.getWeight();
         this.info = n.getInfo();
-//        this.edges = new HashMap<>();
-//        this.location = new Igeo_location(n.getLocation());
+
     }
 
-//    v-v-v-v
 //    copy constructor for the load
     public Inode_data(Igeo_location g) {
         this.key = taz++;
@@ -51,7 +47,7 @@ public class Inode_data implements node_data,Comparable {
         this.location = new Igeo_location(0,0,0);
     }
 
-    //    ^-^-^-^
+
     @Override
     public int getKey() {
         return key;
@@ -61,7 +57,7 @@ public class Inode_data implements node_data,Comparable {
     public geo_location getLocation() {
         return location;
     }
-//hope its correct
+
     @Override
     public void setLocation(geo_location p) {
         this.location = new Igeo_location(p);
