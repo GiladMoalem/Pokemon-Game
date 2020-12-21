@@ -5,15 +5,10 @@ import api.*;
 import gameClient.Arena;
 import gameClient.CL_Pokemon;
 import gameClient.MyFrame;
-import gameClient.MyFrame2;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import javax.swing.*;
-import java.awt.*;
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
 
 public class Test_Frame implements Runnable{
 

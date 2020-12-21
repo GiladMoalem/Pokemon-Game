@@ -37,5 +37,8 @@
     <orderEntry type="library" name="json-simple-1.1" level="project" />
     <orderEntry type="library" name="json-simple-2.1.2" level="project" />
     <orderEntry type="library" name="gson-2.8.6" level="project" />
+    <orderEntry type="library" name="json-simple-1.11" level="project" />
+    <orderEntry type="library" name="jar_files" level="project" />
+    <orderEntry type="library" name="gson-2.8.61" level="project" />
   </component>
 </module>

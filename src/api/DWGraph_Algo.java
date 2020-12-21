@@ -3,7 +3,8 @@ package api;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.simple.parser.JSONParser;
+import com.google.gson.*;
+import com.google.gson.JsonArray;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -153,7 +154,7 @@ public class DWGraph_Algo implements dw_graph_algorithms {
                 obj.put("src", n.getSrc());
                 obj.put("w", n.getWeight());
                 obj.put("dest", n.getDest());
-                informationE.put(obj);//add -> put
+                informationE.put(obj);
             }
         }
 
@@ -162,7 +163,7 @@ public class DWGraph_Algo implements dw_graph_algorithms {
             String str = n.getLocation().x() + "," + n.getLocation().y() + "," + n.getLocation().z();
             obj.put("pos", str);
             obj.put("id", n.getKey());
-            informationN.put(obj);//add -> put
+            informationN.put(obj);
         }
         all.put("Edges", informationE);
         all.put("Nodes", informationN);
@@ -170,9 +171,8 @@ public class DWGraph_Algo implements dw_graph_algorithms {
         FileWriter f = null;
         try {
 
-            // Constructs a FileWriter given a file name, using the platform's default charset
-            f = new FileWriter("C:\\Users\\Gilad\\Desktop\\file.txt");//to change to file!!!!!
-            f.write(all.toString());//all.toJSONString() -> all.toString()
+            f = new FileWriter("out\\g0.txt");
+            f.write(all.toString());
 
 
         } catch (IOException e) {
@@ -183,7 +183,6 @@ public class DWGraph_Algo implements dw_graph_algorithms {
             try {
                 f.flush();
                 f.close();
-                System.out.println(all);//Checking for us
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -196,45 +195,38 @@ public class DWGraph_Algo implements dw_graph_algorithms {
 
     @Override
     public boolean load(String file) {
-    /*DWGraph_DS*/ g = new DWGraph_DS();//change 1: remove the "DWGraph_DS" and work on this.g
+    g = new DWGraph_DS();
+    Gson gson = new Gson();
 
         try {
-            FileReader f = new FileReader("C:\\Users\\Gilad\\Desktop\\file.txt");
-            org.json.simple.parser.JSONParser jsonParser = new JSONParser();
-            JSONObject jsonObject = (JSONObject) jsonParser.parse(f);
-            JSONArray a = (JSONArray) jsonObject.get("Edges");
-            JSONArray b = (JSONArray) jsonObject.get("Nodes");
-//            int i = 0;
-            for (int i=0; i < b.length(); i++){//change 2: while -> for, size() -> length()
-//            while (i < b.size()) {//can use for loop/ to fix and work with STRINGS
-                JSONObject n=(JSONObject)b.get(i);
-                String s=(String)n.get("pos");
-        int first=0,second = 0;//change 3: edit STRING s
-        for(int ch=0; ch<s.length(); ch++){
-            if(s.charAt(ch) == ','){
-                if(first == 0)
-                    first = ch;
-                else second = ch;
-            }
-        }
-        //change 4: casting to double
+            FileReader f = new FileReader(file);
+            JsonObject graph = gson.fromJson(f, JsonObject.class);
+            f.close();
+            JsonArray a = graph.get("Edges").getAsJsonArray();
+            JsonArray b = graph.get("Nodes").getAsJsonArray();
+            for (int i=0; i < b.size(); i++){
+                JsonObject n=b.get(i).getAsJsonObject();
+                String s=n.get("pos").getAsString();
+                int first=0,second = 0;
+                for(int ch=0; ch<s.length(); ch++){
+                    if(s.charAt(ch) == ','){
+                        if(first == 0)
+                            first = ch;
+                        else second = ch;
+                    }
+                }
+
                 double x = Double.parseDouble ( s.substring(0,first) );
                 double y = Double.parseDouble ( s.substring(first+1, second) );
                 double z = Double.parseDouble ( s.substring(second+1) );
                 Igeo_location l= new Igeo_location(x,y,z);
-//        node_data node= new Inode_data();
-
-                int key = (int)n.get("id");//change 5: reading the key node
-                node_data n2 = new Inode_data(key, l); //change 6 -> create node with specific location and key
+                int key = n.get("id").getAsInt();
+                node_data n2 = new Inode_data(key, l);
                 g.addNode(n2);
-//                i++;
             }
-//            int p=0;
-//            while(p<a.size()){
-            for (int p=0; p < a.length(); p++){//change 6: while -> for, size() -> length()
-                JSONObject e=(JSONObject)a.get(p);
-                g.connect((int) e.get("src"), (int) e.get("dest"), Double.parseDouble(e.get("w").toString()));//change 7: casting to int and no double
-//                p++;
+            for (int p=0; p < a.size(); p++){
+                JsonObject e=a.get(p).getAsJsonObject();
+                g.connect(e.get("src").getAsInt(), e.get("dest").getAsInt(), e.get("w").getAsDouble());
             }
 
         } catch (Exception e) {

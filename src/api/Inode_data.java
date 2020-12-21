@@ -1,5 +1,8 @@
 package api;
 
+import java.util.HashSet;
+import java.util.Stack;
+
 public class Inode_data implements node_data,Comparable {
 
     private int key;
@@ -42,7 +45,13 @@ public class Inode_data implements node_data,Comparable {
         this.info = "";
         this.location = g;
     }
-//    ^-^-^-^
+
+    public Inode_data(int i) {
+        this.key = i;
+        this.location = new Igeo_location(0,0,0);
+    }
+
+    //    ^-^-^-^
     @Override
     public int getKey() {
         return key;
@@ -93,5 +102,4 @@ public class Inode_data implements node_data,Comparable {
         if(this.weight < ((Inode_data)o).weight ) return -1;
         else return 1;
     }
-
 }
