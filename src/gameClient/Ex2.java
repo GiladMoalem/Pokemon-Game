@@ -151,7 +151,7 @@ public class Ex2 implements Runnable{
 
         HashMap<edge_data, CL_Agent> arrange = new HashMap<>();
         for(CL_Agent ag: log)
-            goTo(ag, arrange, _ar.getPokemons(), G, gg);
+            goTo(ag, arrange, _ar.getPokemons(), G, gg,game);
 
         for (CL_Agent ag : log) {
 
@@ -161,12 +161,6 @@ public class Ex2 implements Runnable{
             double v = ag.getValue();
 
             if (dest == -1) {
-
-//                    ag.setNextPokemonEdge(edge);
-                    dest = nextNode(gg, src/*,log*/);//algorithm
-//                    game.chooseNextEdge(ag.getID(), dest);//execute //update the next node?
-//                    ag.setNextNode(dest);//updates the dest node! i added
-                    System.out.println("Agent: " + id + ", val: " + v + "   turned to node: " + dest);
                 }
             }
         for(edge_data a: arrange.keySet()){
@@ -174,64 +168,19 @@ public class Ex2 implements Runnable{
             if(ag.getNextNode()==-1) {
                 int dest = newNextNode(G, ag.getSrcNode(), a);
                 game.chooseNextEdge(ag.getID(), dest);
+                System.out.println("Agent: " + ag.getID() + ", val: " + ag.getValue() + "   turned to node: " + dest);
+
             }
         }
         return lg;
         }
 
-        private static int newNextNode (dw_graph_algorithms G,int src,edge_data edge){
-            if(src==edge.getSrc()) return edge.getDest();
-            return G.shortestPath(src, edge.getSrc()).get(1).getKey();
-        }
+    private static int newNextNode (dw_graph_algorithms G,int src,edge_data edge){
+        if(src==edge.getSrc()) return edge.getDest();
+        return G.shortestPath(src, edge.getSrc()).get(1).getKey();
+    }
 
-
-        private static int nextNode (directed_weighted_graph g,int src/*, List<CL_Pokemon> allPokemons*/)
-        { //how to choose pokemon's
-            PriorityQueue<CL_Pokemon> p = new PriorityQueue<>(_ar.getPokemons());
-            dw_graph_algorithms G = new DWGraph_Algo();
-            G.init(g);
-            directed_weighted_graph g2 = G.copy();
-            G.init(g2);
-
-
-            boolean fast = true;
-
-
-            if (fast) {
-                edge_data srcMin = null;
-                double min = -2;
-
-                for (CL_Pokemon pok : p) {
-                    edge_data edge = pok.get_edge();
-                    double x = G.shortestPathDist(src, edge.getDest()) + edge.getWeight();
-                    if ((min == -2) || (x < min)) {
-                        min = x;
-                        srcMin = edge;
-                    }
-                }
-
-                if (src == srcMin.getSrc()) return srcMin.getDest();
-                return G.shortestPath(src, srcMin.getSrc()).get(1).getKey();
-
-                /////////////////////////////////////////////////////////////////////
-            } else {
-
-//        _ar.updateEdge(p,g);
-                edge_data edge = p.peek().get_edge();
-                if (src == edge.getSrc()) return edge.getDest();
-
-
-                List<node_data> path = G.shortestPath(src, edge.getSrc());
-                if (path == null || path.isEmpty()) return -1;
-                else
-                    System.out.println(path.get(0).getKey());
-                System.out.println("Next Node: " + path.get(0).getKey());
-                return path.get(1).getKey();
-            }
-
-        }
-
-        /**
+    /**
          * this method gets src node and pokemon's list and returns the closest pokemon's edge
          * @param G
          * @param src
@@ -276,8 +225,14 @@ public class Ex2 implements Runnable{
      * @param G
      * @param g
      */
-    private static void goTo(CL_Agent ag, HashMap<edge_data,CL_Agent> allAgents, List<CL_Pokemon> pokemons, dw_graph_algorithms G,directed_weighted_graph g){
+    private static void goTo(CL_Agent ag, HashMap<edge_data,CL_Agent> allAgents, List<CL_Pokemon> pokemons, dw_graph_algorithms G,directed_weighted_graph g,game_service game){
         edge_data edge = nextEdge(G, ag.getSrcNode(), pokemons);
+        if(edge == null) {
+            //random function nextNode
+            int dest = nextNode(G.getGraph(),ag.getSrcNode());
+            game.chooseNextEdge(ag.getID(), dest);
+            return;
+        }
         if(!allAgents.containsKey(edge)){
             allAgents.put(edge, ag);
         }else{
@@ -286,13 +241,25 @@ public class Ex2 implements Runnable{
                 if(!Arena.isOnEdge(p.getLocation(), edge,p.getType(), g))
                     newPokemon.add(p);
             if (isCloser(G,allAgents.get(edge).getSrcNode(),ag.getSrcNode(),edge.getSrc())){//oldAgent closer then the new agent
-                goTo(ag, allAgents, newPokemon, G, g);
+                goTo(ag, allAgents, newPokemon, G, g,game);
             }else{
                 CL_Agent other = allAgents.get(edge);
                 allAgents.put(edge, ag);
-                goTo( other, allAgents, newPokemon, G, g);
+                goTo( other, allAgents, newPokemon, G, g,game);
             }
         }
+    }
+
+    private static int nextNode(directed_weighted_graph g, int src) {
+        int ans = -1;
+        Collection<edge_data> ee = g.getE(src);
+        Iterator<edge_data> itr = ee.iterator();
+        int s = ee.size();
+        int r = (int)(Math.random()*s);
+        int i=0;
+        while(i<r) {itr.next();i++;}
+        ans = itr.next().getDest();
+        return ans;
     }
 
 
